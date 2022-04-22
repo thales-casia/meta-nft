@@ -1,0 +1,25 @@
+{
+  "name": "meta-nft",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "pinia": "^2.0.13",
+    "three": "^0.139.2",
+    "vant": "^3.4.8",
+    "vue": "^3.2.33"
+  },
+  "devDependencies": {
+    "@types/three": "^0.139.0",
+    "@vitejs/plugin-vue": "^1.10.2",
+    "sass": "^1.50.1",
+    "sass-loader": "^12.6.0",
+    "typescript": "^4.6.3",
+    "vite": "^2.9.5",
+    "vue-tsc": "^0.31.4"
+  }
+}
