@@ -1,7 +1,8 @@
-import { WebGLRenderer, EventDispatcher, PerspectiveCamera, Scene, Color, DirectionalLight, AmbientLight, Event } from 'three';
+import { WebGLRenderer, EventDispatcher, PerspectiveCamera, Scene, Color, DirectionalLight, AmbientLight, Event, Object3D } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
+import { DeviceOrientationControls } from '@/utils/device-orientation-controls';
 
 /**
  * 版本
@@ -25,12 +26,15 @@ const Static = {
   CAMERA_FAR: 60
 };
 
-export class Exhibition {
+export class Exhibition extends EventDispatcher {
   _canvas;
   __camera; // 摄像头
   __scene; // 场景
+  __obj; //
   __renderer; // 渲染器
+  _controls:any = null;
   constructor(canvas:HTMLCanvasElement) {
+    super();
     this._canvas = canvas;
     this.onResize();
     this.__scene = new Scene();
@@ -41,7 +45,8 @@ export class Exhibition {
     const directionalLight = new DirectionalLight(0xffffff, 100);
     directionalLight.position.set(1, 100, 0).normalize();
     const ambientLight = new AmbientLight(0xffffff);
-    this.__scene.add(directionalLight, ambientLight);
+    this.__obj = new Object3D();
+    this.__scene.add(this.__obj, directionalLight, ambientLight);
     window.addEventListener('resize', this.onResize);
     this.animate(0);
   }
@@ -61,35 +66,37 @@ export class Exhibition {
   start(url:string) {
     this.onResize(); // 必须重新定位，否则高度不正确
     this.fbx(url);
-    const controls = new OrbitControls(this.__camera, this.__renderer.domElement);
-    controls.update();
+    // const controls = new OrbitControls(this.__camera, this.__renderer.domElement);
+    this._controls = new DeviceOrientationControls(this.__obj);
+    this._controls.connect();
   };
   gltf(url:string) {
     const loader = new GLTFLoader();
     loader.load(url, (gltf) => {
       gltf.scene.name = '3dmodel';
       // this.__scene.add(gltf.scene);
-      this.__scene.add(gltf.scene);
+      this.__obj.add(gltf.scene);
       console.log(gltf);
     }, this.onLoading, this.onLoadErrer);
   }
   fbx(url:string) {
     const loader = new FBXLoader();
     loader.load(url, (obj) => {
-      this.__scene.add(obj);
+      this.__obj.add(obj);
       console.log(obj);
     }, this.onLoading, this.onLoadErrer);
   }
   onLoading = (e:Event) => {
     console.log(e);
     const event = { type: EVENT.LOADING, data: e };
-    // _this.dispatchEvent(event); // 走棋
+    this.dispatchEvent(event);
   }
   onLoadErrer = (e:Event) => {
     console.error(e);
   }
   animate = (time:number)=> {
     requestAnimationFrame(this.animate);
+    if(this._controls) this._controls.update();
     this.__renderer.render(this.__scene, this.__camera);
   }
 }

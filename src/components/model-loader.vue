@@ -25,7 +25,7 @@ onMounted(() => {
   console.log(canvas.value, props);
   if(canvas.value && props.modelUrl) {
     const exhibition = new Exhibition(canvas.value);
-    // exhibition.addEventListener(EVENT.LOADING, onLoading);
+    exhibition.addEventListener(EVENT.LOADING, onLoading);
     exhibition.start(props.modelUrl);
   }
 });

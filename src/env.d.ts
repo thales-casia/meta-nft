@@ -8,6 +8,10 @@ declare module '*.vue' {
 }
 
 interface Window {
+  DeviceOrientationEvent: any;
+}
+
+interface Window {
   _hmt: any;
 }
 
