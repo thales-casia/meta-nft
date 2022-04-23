@@ -1,4 +1,4 @@
-import { WebGLRenderer, EventDispatcher, PerspectiveCamera, Scene, Color, DirectionalLight, AmbientLight, Event, Object3D } from 'three';
+import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, Color, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, SphereGeometry, Group } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
@@ -38,17 +38,39 @@ export class Exhibition extends EventDispatcher {
     this._canvas = canvas;
     this.onResize();
     this.__scene = new Scene();
-    this.__scene.background = new Color('skyblue');
     this.__camera = new PerspectiveCamera(75, Static.WIDTH / Static.HEIGHT, 0.01, 100000);
     this.__camera.position.set(0, 10, Static.CAMERA_FAR);
     this.__renderer = new WebGLRenderer({ canvas, antialias: true });
-    const directionalLight = new DirectionalLight(0xffffff, 100);
-    directionalLight.position.set(1, 100, 0).normalize();
-    const ambientLight = new AmbientLight(0xffffff);
     this.__obj = new Object3D();
-    this.__scene.add(this.__obj, directionalLight, ambientLight);
+    this.__scene.add( this.getBackground(), this.getLights(), this.__obj);
     window.addEventListener('resize', this.onResize);
     this.animate(0);
+  }
+  getBackground() {
+    const geometry = new SphereGeometry(80, 50, 50);
+    const texture = new TextureLoader().load( 'equirectangular.png' );
+    const meterial = new MeshPhongMaterial({ color: 0xffff00, map:texture, side: BackSide});
+    const mesh = new Mesh(geometry, meterial);
+    return mesh;
+  }
+  getLights() {
+    const group = new Group();
+    const directionalLight1 = new DirectionalLight(0xffffff, 1);
+    directionalLight1.position.set(50, 50, 0);
+    const directionalLight2 = new DirectionalLight(0xffffff, 1);
+    directionalLight2.position.set(0, 50, 50);
+    const directionalLight3 = new DirectionalLight(0xffffff, 1);
+    directionalLight3.position.set(0, 50, -50);
+    const directionalLight4 = new DirectionalLight(0xffffff, 1);
+    directionalLight4.position.set(-50, 50, 0);
+    group.add(
+      // new AmbientLight(0xffffff, 0.4),
+      directionalLight1,
+      directionalLight2,
+      directionalLight3,
+      directionalLight4
+    );
+    return group;
   }
   /**
    * 尺寸重置

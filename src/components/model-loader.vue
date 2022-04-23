@@ -1,6 +1,6 @@
 <template>
   <div class="model-loader">
-    <div>{{loadingMsg}}</div>
+    <div class="loading-bar">{{loadingMsg}}</div>
     <canvas ref="canvas" width="500" height="500" style="width:100%"></canvas>
   </div>
 </template>
@@ -22,8 +22,9 @@ function onLoading (e:any) {
   loadingMsg.value = `加载进度:${Math.floor(per * 1000) / 10}%`;
 }
 onMounted(() => {
-  console.log(canvas.value, props);
   if(canvas.value && props.modelUrl) {
+    canvas.value.width = window.innerWidth;
+    canvas.value.height = window.innerHeight;
     const exhibition = new Exhibition(canvas.value);
     exhibition.addEventListener(EVENT.LOADING, onLoading);
     exhibition.start(props.modelUrl);
@@ -32,6 +33,11 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+.model-loader {
+  .loading-bar {
+    position: fixed;
+  }
+}
 h3 {
   margin: 40px 0 0;
 }
