@@ -64,7 +64,7 @@ export class Exhibition extends EventDispatcher {
     const directionalLight4 = new DirectionalLight(0xffffff, 1);
     directionalLight4.position.set(-50, 50, 0);
     group.add(
-      // new AmbientLight(0xffffff, 0.4),
+      new AmbientLight(0xffffff, 0.4),
       directionalLight1,
       directionalLight2,
       directionalLight3,
@@ -90,7 +90,6 @@ export class Exhibition extends EventDispatcher {
     this.fbx(url);
     // const controls = new OrbitControls(this.__camera, this.__renderer.domElement);
     this._controls = new DeviceOrientationControls(this.__obj);
-    this._controls.connect();
   };
   gltf(url:string) {
     const loader = new GLTFLoader();
@@ -118,7 +117,6 @@ export class Exhibition extends EventDispatcher {
   }
   animate = (time:number)=> {
     requestAnimationFrame(this.animate);
-    if(this._controls) this._controls.update();
     this.__renderer.render(this.__scene, this.__camera);
   }
 }

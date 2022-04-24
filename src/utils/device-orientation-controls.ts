@@ -47,6 +47,8 @@ class DeviceOrientationControls extends EventDispatcher {
 
 			scope.deviceOrientation = event;
 
+			scope.update();
+
 		};
 
 		const onScreenOrientationChangeEvent = function () {
