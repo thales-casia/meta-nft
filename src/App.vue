@@ -1,8 +1,6 @@
 <template>
-  <div>
-    <model-loader model-url="models/cube.fbx" />
-  </div>
+  <model/>
 </template>
 <script setup lang="ts">
-import ModelLoader from '@/components/model-loader.vue';
+import model from '@/pages/model.vue';
 </script>

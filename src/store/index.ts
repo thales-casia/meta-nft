@@ -1,3 +1,3 @@
-import useYolo from './modules/yolo';
+import useModel from './modules/model';
 
-export { useYolo };
+export { useModel };

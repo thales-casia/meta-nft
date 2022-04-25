@@ -23,7 +23,7 @@ const Static = {
   Y: 0,
   WIDTH: 0,
   HEIGHT: 0,
-  CAMERA_FAR: 60
+  CAMERA_FAR: 600
 };
 
 export class Exhibition extends EventDispatcher {
@@ -39,7 +39,7 @@ export class Exhibition extends EventDispatcher {
     this.onResize();
     this.__scene = new Scene();
     this.__camera = new PerspectiveCamera(75, Static.WIDTH / Static.HEIGHT, 0.01, 100000);
-    this.__camera.position.set(0, 10, Static.CAMERA_FAR);
+    this.__camera.position.set(0, 0, Static.CAMERA_FAR);
     this.__renderer = new WebGLRenderer({ canvas, antialias: true });
     this.__obj = new Object3D();
     this.__scene.add( this.getBackground(), this.getLights(), this.__obj);
@@ -47,7 +47,7 @@ export class Exhibition extends EventDispatcher {
     this.animate(0);
   }
   getBackground() {
-    const geometry = new SphereGeometry(80, 50, 50);
+    const geometry = new SphereGeometry(800, 500, 500);
     const texture = new TextureLoader().load( 'equirectangular.png' );
     const meterial = new MeshPhongMaterial({ color: 0xffff00, map:texture, side: BackSide});
     const mesh = new Mesh(geometry, meterial);
@@ -56,13 +56,13 @@ export class Exhibition extends EventDispatcher {
   getLights() {
     const group = new Group();
     const directionalLight1 = new DirectionalLight(0xffffff, 1);
-    directionalLight1.position.set(50, 50, 0);
+    directionalLight1.position.set(500, 500, 0);
     const directionalLight2 = new DirectionalLight(0xffffff, 1);
-    directionalLight2.position.set(0, 50, 50);
+    directionalLight2.position.set(0, 500, 500);
     const directionalLight3 = new DirectionalLight(0xffffff, 1);
-    directionalLight3.position.set(0, 50, -50);
+    directionalLight3.position.set(0, 500, -500);
     const directionalLight4 = new DirectionalLight(0xffffff, 1);
-    directionalLight4.position.set(-50, 50, 0);
+    directionalLight4.position.set(-500, 500, 0);
     group.add(
       new AmbientLight(0xffffff, 0.4),
       directionalLight1,
@@ -87,17 +87,20 @@ export class Exhibition extends EventDispatcher {
    */
   start(url:string) {
     this.onResize(); // 必须重新定位，否则高度不正确
-    this.fbx(url);
+    // this.fbx(url);
+    this.gltf(url);
     // const controls = new OrbitControls(this.__camera, this.__renderer.domElement);
     this._controls = new DeviceOrientationControls(this.__obj);
   };
+  changeModel(url:string) {
+    this.__obj.clear()
+    this.gltf(url);
+  }
   gltf(url:string) {
     const loader = new GLTFLoader();
     loader.load(url, (gltf) => {
       gltf.scene.name = '3dmodel';
-      // this.__scene.add(gltf.scene);
       this.__obj.add(gltf.scene);
-      console.log(gltf);
     }, this.onLoading, this.onLoadErrer);
   }
   fbx(url:string) {
