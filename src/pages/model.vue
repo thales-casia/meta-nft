@@ -1,7 +1,9 @@
 <template>
   <div>
     <ul class="model-list">
-      <li v-for="(v, k) in models" @click="onModelChoose" :data-k="k">{{k}}</li>
+      <li v-for="(v, k) in models" :class="{active:modelsKey == k}" @click="onModelChoose" :data-k="k">
+        <img :src="v.preview" />
+      </li>
     </ul>
     <model-loader :model-url="modelUrl" />
   </div>
@@ -12,6 +14,7 @@ import { useModel } from '@/store';
 import { computed, onMounted } from 'vue';
 const store = useModel();
 
+const modelsKey = computed(() => store.modelsKey);
 const modelUrl = computed(() => store.url);
 const models = computed(() => store.models);
 function onModelChoose(e:MouseEvent) {
@@ -26,11 +29,18 @@ function onModelChoose(e:MouseEvent) {
   width: 100%;
   padding: 1em;
   li {
-    background-color: rgba($color: #000000, $alpha: 0.5);
-    display: inline;
-    padding: 1em;
+    display: inline-block;
+    border: solid rgba($color: #000000, $alpha: 0.5) 2px;
     margin-right: 1em;
+    height: 2em;
     color: #FFF;
+    &.active {
+      border: solid #FFF 2px;
+    }
+    img {
+      width: 2em;
+      height: 2em;
+    }
   }
 }
 </style>

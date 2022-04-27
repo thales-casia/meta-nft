@@ -1,9 +1,22 @@
 import { defineStore } from 'pinia';
+import previewN1 from '@/assets/images/n1.png';
+import previewN2 from '@/assets/images/n2.png';
+import previewN3 from '@/assets/images/n3.png';
 
-const models:any = {
-  'n1': 'models/n1.glb',
-  'n2': 'models/n2.glb'
-}
+const models:any = [
+  {
+    preview: previewN1,
+    url: 'models/n1.glb'
+  },
+  {
+    preview: previewN2,
+    url: 'models/n2.glb'
+  },
+  {
+    preview: previewN3,
+    url: 'models/n3.glb'
+  }
+];
 
 /**
  * 模型加载页面
@@ -11,16 +24,19 @@ const models:any = {
 const useModel = defineStore({
   id: 'modelShow',
   state: () => ({
-    url: <string>(models['n1']) // 地址
+    modelsKey: 0
   }),
   getters: {
+    url():string {
+      return models[this.modelsKey].url;
+    },
     models():any  {
       return models;
     }
   },
   actions: {
     changeModel(key:any):void {
-      this.url = models[key];
+      this.modelsKey = key;
     }
   }
 });

@@ -21,7 +21,7 @@ function onLoading (e:any) {
   console.log(e);
   const { data } = e;
   const per = data.loaded / data.total;
-  msg.value = `加载进度:${Math.floor(per * 1000) / 10}%`;
+  msg.value = per==1?'':`加载进度:${Math.floor(per * 1000) / 10}%`;
 }
 let exhibition:any;
 watch(() => props.modelUrl, (val) => {
