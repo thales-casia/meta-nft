@@ -1,4 +1,4 @@
-import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, Color, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, SphereGeometry, Group } from 'three';
+import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, Color, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
@@ -31,6 +31,7 @@ export class Exhibition extends EventDispatcher {
   __camera; // 摄像头
   __scene; // 场景
   __obj; //
+  // __bg;//
   __renderer; // 渲染器
   _controls:any = null;
   constructor(canvas:HTMLCanvasElement) {
@@ -41,15 +42,23 @@ export class Exhibition extends EventDispatcher {
     this.__camera = new PerspectiveCamera(75, Static.WIDTH / Static.HEIGHT, 0.01, 100000);
     this.__camera.position.set(0, 0, Static.CAMERA_FAR);
     this.__renderer = new WebGLRenderer({ canvas, antialias: true });
+    // this.__bg = this.getBackground();
     this.__obj = new Object3D();
-    this.__scene.add( this.getBackground(), this.getLights(), this.__obj);
+    this.__scene.add( this.getLights(), this.__obj);
     window.addEventListener('resize', this.onResize);
     this.animate(0);
   }
   getBackground() {
+    // const geometry = new CylinderGeometry(500, 500, 1000, 50, 1, true);
+    // const t = new TextureLoader().load( 'equirectangular.png' );
+    // t.mapping = EquirectangularReflectionMapping;
+    // this.__scene.background = t;
+    // this.__scene.environment = t;
     const geometry = new SphereGeometry(800, 500, 500);
     const texture = new TextureLoader().load( 'equirectangular.png' );
-    const meterial = new MeshPhongMaterial({ color: 0xffff00, map:texture, side: BackSide});
+    texture.mapping = EquirectangularReflectionMapping;
+    this.__scene.environment = texture;
+    const meterial = new MeshPhongMaterial({ color: 0xffffff, map:texture, side: BackSide});
     const mesh = new Mesh(geometry, meterial);
     return mesh;
   }
@@ -83,18 +92,42 @@ export class Exhibition extends EventDispatcher {
   }
   /**
    * 开始
-   * @param {int} url 地址
    */
-  start(url:string) {
+  start() {
     this.onResize(); // 必须重新定位，否则高度不正确
     // this.fbx(url);
-    this.gltf(url);
-    // const controls = new OrbitControls(this.__camera, this.__renderer.domElement);
+    // this.gltf(url);
+    const controls = new OrbitControls(this.__camera, this.__renderer.domElement);
     this._controls = new DeviceOrientationControls(this.__obj);
   };
+  /**
+   * 改变模型
+   * @param url 模型地址
+   */
   changeModel(url:string) {
     this.__obj.clear()
     this.gltf(url);
+  }
+  /**
+   * 改变背景
+   * @param url 背景地址
+   */
+  changeBackground(url:string) {
+    new TextureLoader().load( url, texture => {
+      texture.mapping = EquirectangularReflectionMapping;
+      this.__scene.background = texture;
+      this.__scene.environment = texture;
+      this.envToModel(texture, this.__obj);
+    });
+  }
+  envToModel(texture:any, obj:any) {
+    if(obj.meterial) {
+      obj.meterial.envMap = texture;
+      obj.meterial.needsUpdate = true;
+    }
+    if(obj.children.length > 0) {
+      this.envToModel(texture, obj.children[0]);
+    }
   }
   gltf(url:string) {
     const loader = new GLTFLoader();

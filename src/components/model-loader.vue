@@ -9,10 +9,10 @@
 import {Exhibition, EVENT} from '@/utils/exhibition';
 import { onMounted, ref, watch } from 'vue';
 import { Dialog } from 'vant';
-import { computed } from '@vue/reactivity';
 
 const props = defineProps({
-  modelUrl:String
+  modelUrl:String,
+  bgUrl:String
 });
 const canvas = ref<HTMLCanvasElement>();
 
@@ -27,9 +27,11 @@ let exhibition:any;
 watch(() => props.modelUrl, (val) => {
   exhibition.changeModel(val);
 });
+watch(() => props.bgUrl, (val) => {
+  exhibition.changeBackground(val);
+});
 onMounted(() => {
   if(canvas.value && props.modelUrl) {
-    const url = props.modelUrl;
     canvas.value.width = window.innerWidth;
     canvas.value.height = window.innerHeight;
     exhibition = new Exhibition(canvas.value);
@@ -41,11 +43,15 @@ onMounted(() => {
       if ( window.DeviceOrientationEvent !== undefined && typeof window.DeviceOrientationEvent.requestPermission === 'function' ) {
         window.DeviceOrientationEvent.requestPermission().then( (res:any) => {
           if(res == 'granted') {
-            exhibition.start(url);
+            exhibition.start();
+            exhibition.changeModel(props.modelUrl);
+            exhibition.changeBackground(props.bgUrl);
           }
         });
       } else {
-        exhibition.start(url);
+        exhibition.start();
+        exhibition.changeModel(props.modelUrl);
+        exhibition.changeBackground(props.bgUrl);
       }
     }).catch(() => {
       msg.value = '未授权陀螺仪，请关闭App重新授权';
