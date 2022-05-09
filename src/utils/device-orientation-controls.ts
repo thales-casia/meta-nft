@@ -130,7 +130,11 @@ class DeviceOrientationControls extends EventDispatcher {
 
 				const orient = scope.screenOrientation ? MathUtils.degToRad( scope.screenOrientation ) : 0; // O
 
-				setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
+				const quaternion = new Quaternion();
+				setObjectQuaternion( quaternion, alpha, beta, gamma, orient );
+				scope.object.quaternion.rotateTowards(quaternion, 0.1);
+				// setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
+				// console.log(lastQuaternion, scope.object.quaternion);
 
 				if ( 8 * ( 1 - lastQuaternion.dot( scope.object.quaternion ) ) > EPS ) {
 

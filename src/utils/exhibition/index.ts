@@ -1,8 +1,9 @@
-import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, Color, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping } from 'three';
+import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, Color, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
 import { DeviceOrientationControls } from '@/utils/device-orientation-controls';
+import TWEEN, { Tween, Easing } from '@tweenjs/tween.js';
 
 /**
  * 版本
@@ -33,7 +34,8 @@ export class Exhibition extends EventDispatcher {
   __obj; //
   // __bg;//
   __renderer; // 渲染器
-  _controls:any = null;
+  _controls:any = null; // 控制器
+  _gyro:any = null; // 陀螺仪
   constructor(canvas:HTMLCanvasElement) {
     super();
     this._canvas = canvas;
@@ -95,10 +97,10 @@ export class Exhibition extends EventDispatcher {
    */
   start() {
     this.onResize(); // 必须重新定位，否则高度不正确
-    // this.fbx(url);
-    // this.gltf(url);
-    const controls = new OrbitControls(this.__camera, this.__renderer.domElement);
-    this._controls = new DeviceOrientationControls(this.__obj);
+    this._controls = new OrbitControls(this.__camera, this.__renderer.domElement); // 拖动摄像机
+    this._controls.enablePan = false;
+    this._controls.addEventListener('end', this.onControlEnd); // 拖动摄像机之后还原
+    this._gyro = new DeviceOrientationControls(this.__obj); // 陀螺仪控制物体
   };
   /**
    * 改变模型
@@ -143,16 +145,51 @@ export class Exhibition extends EventDispatcher {
       console.log(obj);
     }, this.onLoading, this.onLoadErrer);
   }
+  /**
+   * 停止拖动
+   * @param e 事件
+   */
+  onControlEnd = (e:Event) => {
+    let position = { // 现在位置
+      x: this._controls.object.position.x,
+      y: this._controls.object.position.y,
+      z: this._controls.object.position.z,
+      length: this._controls.object.position.length()
+    };
+    let aim = { // 目标位置
+      x: this._controls.position0.x,
+      y: this._controls.position0.y,
+      z: this._controls.position0.z,
+      length: 600
+    };
+    const t = new Tween(position).to(aim, 500).easing(Easing.Quadratic.In);
+    t.onUpdate((e) => {
+      const v = new Vector3(e.x, e.y, e.z);
+      v.setLength(e.length)
+      this._controls.object.position.set(v.x, v.y, v.z);
+      this._controls.object.lookAt(this._controls.target);
+    });
+    t.start();
+  }
+  /**
+   * 模型加载中
+   * @param e 事件
+   */
   onLoading = (e:Event) => {
     console.log(e);
     const event = { type: EVENT.LOADING, data: e };
     this.dispatchEvent(event);
   }
+  /**
+   * 模型加载错误
+   * @param e 事件
+   */
   onLoadErrer = (e:Event) => {
     console.error(e);
   }
   animate = (time:number)=> {
     requestAnimationFrame(this.animate);
+    TWEEN.update(time);
     this.__renderer.render(this.__scene, this.__camera);
   }
 }
