@@ -1,4 +1,4 @@
-import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, Color, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping, Vector3 } from 'three';
+import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, MathUtils, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
@@ -24,7 +24,8 @@ const Static = {
   Y: 0,
   WIDTH: 0,
   HEIGHT: 0,
-  CAMERA_FAR: 600
+  DURATION: 800,
+  CAMERA_FAR: 900
 };
 
 export class Exhibition extends EventDispatcher {
@@ -160,9 +161,31 @@ export class Exhibition extends EventDispatcher {
       x: this._controls.position0.x,
       y: this._controls.position0.y,
       z: this._controls.position0.z,
-      length: 600
+      length: Static.CAMERA_FAR
     };
-    const t = new Tween(position).to(aim, 500).easing(Easing.Quadratic.In);
+    /*
+    const a = Math.round(MathUtils.radToDeg(Math.atan2(position.x, position.z)) / 90);
+    switch(a) {
+      case -1:
+        aim.x = Static.CAMERA_FAR;
+        aim.z = 0;
+        break;
+      case 1:
+        aim.x = -Static.CAMERA_FAR;
+        aim.z = 0;
+        break;
+      case 2:
+        aim.x = 0
+        aim.z = -Static.CAMERA_FAR;
+        break;
+      case 0:
+      default:
+        aim.x = 0
+        aim.z = Static.CAMERA_FAR;
+        break;
+    }
+    */
+    const t = new Tween(position).to(aim, Static.DURATION).easing(Easing.Quadratic.In);
     t.onUpdate((e) => {
       const v = new Vector3(e.x, e.y, e.z);
       v.setLength(e.length)

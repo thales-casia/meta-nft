@@ -5,6 +5,7 @@
     "start": "npm run dev",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "tar": "tar zcvf web.tar.gz dist",
     "serve": "vite preview"
   },
   "dependencies": {
