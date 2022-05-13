@@ -13,6 +13,16 @@ const _q1 = new Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) ); // - P
 
 const _changeEvent = { type: 'change' };
 
+const stepwise = (rota:number) => {
+	const deg = MathUtils.radToDeg(rota);
+	// console.log(deg);
+	if(Math.abs( deg % 90 ) < 10) {
+		console.log(deg);
+		// rota = Math.round(deg / 90) * Math.PI/2;
+	}
+	return rota;
+}
+
 class DeviceOrientationControls extends EventDispatcher {
 	object;
 	enabled;
@@ -132,7 +142,14 @@ class DeviceOrientationControls extends EventDispatcher {
 
 				const quaternion = new Quaternion();
 				setObjectQuaternion( quaternion, alpha, beta, gamma, orient );
+				// if(Math.abs(quaternion.angleTo(_q0)) < 0.5) {
+				// 	quaternion.set(_q0.x, _q0.y, _q0.z, _q0.w);
+				// }
 				scope.object.quaternion.rotateTowards(quaternion, 0.1);
+				// console.log(scope.object.quaternion, scope.object.rotation);
+				scope.object.rotation.x = stepwise(scope.object.rotation.x);
+				scope.object.rotation.y = stepwise(scope.object.rotation.y);
+				scope.object.rotation.z = stepwise(scope.object.rotation.z);
 				// setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
 				// console.log(lastQuaternion, scope.object.quaternion);
 

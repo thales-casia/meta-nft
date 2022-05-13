@@ -1,6 +1,6 @@
 <template>
   <div class="model-loader">
-    <div class="msg">{{msg}}</div>
+    <div v-if="isLoading" class="msg">{{msg}}</div>
     <canvas ref="canvas" width="500" height="500" style="width:100%"></canvas>
   </div>
 </template>
@@ -17,11 +17,16 @@ const props = defineProps({
 const canvas = ref<HTMLCanvasElement>();
 
 const msg = ref('');
+const isLoading = ref(false);
 function onLoading (e:any) {
   console.log(e);
+  isLoading.value = true;
   const { data } = e;
   const per = data.loaded / data.total;
-  msg.value = per==1?'':`加载进度:${Math.floor(per * 1000) / 10}%`;
+  msg.value = `加载进度:${Math.floor(per * 1000) / 10}%`;
+}
+function onLoaded(e:any) {
+  isLoading.value = false;
 }
 let exhibition:any;
 watch(() => props.modelUrl, (val) => {
@@ -36,6 +41,7 @@ onMounted(() => {
     canvas.value.height = window.innerHeight;
     exhibition = new Exhibition(canvas.value);
     exhibition.addEventListener(EVENT.LOADING, onLoading);
+    exhibition.addEventListener(EVENT.LOADED, onLoaded);
     Dialog.confirm({
       title: '授权',
       message: '请授权陀螺仪'

@@ -1,7 +1,7 @@
 import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, MathUtils, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { DeviceOrientationControls } from '@/utils/device-orientation-controls';
 import TWEEN, { Tween, Easing } from '@tweenjs/tween.js';
 
@@ -16,7 +16,9 @@ export const EVENT = {
    RUNNING: 'running',
    GAME_INIT: 'gameInit',
    GAME_START: 'gameStart',
-   LOADING: 'modelLoaing',
+   LOADING: 'modelLoading',
+   LOADED: 'modelLoaded',
+   LOAD_FAIL: 'modelLoadFail',
    GAME_OVER: 'gameOver'
 };
 const Static = {
@@ -25,7 +27,7 @@ const Static = {
   WIDTH: 0,
   HEIGHT: 0,
   DURATION: 800,
-  CAMERA_FAR: 900
+  CAMERA_FAR: 9
 };
 
 export class Exhibition extends EventDispatcher {
@@ -35,6 +37,7 @@ export class Exhibition extends EventDispatcher {
   __obj; //
   // __bg;//
   __renderer; // 渲染器
+  _loader:any = null; // 加载器
   _controls:any = null; // 控制器
   _gyro:any = null; // 陀螺仪
   constructor(canvas:HTMLCanvasElement) {
@@ -42,39 +45,25 @@ export class Exhibition extends EventDispatcher {
     this._canvas = canvas;
     this.onResize();
     this.__scene = new Scene();
-    this.__camera = new PerspectiveCamera(75, Static.WIDTH / Static.HEIGHT, 0.01, 100000);
+    this.__camera = new PerspectiveCamera(75, Static.WIDTH / Static.HEIGHT, 0.01, 10000);
     this.__camera.position.set(0, 0, Static.CAMERA_FAR);
     this.__renderer = new WebGLRenderer({ canvas, antialias: true });
-    // this.__bg = this.getBackground();
     this.__obj = new Object3D();
+    this.loaderInit();
     this.__scene.add( this.getLights(), this.__obj);
     window.addEventListener('resize', this.onResize);
     this.animate(0);
   }
-  getBackground() {
-    // const geometry = new CylinderGeometry(500, 500, 1000, 50, 1, true);
-    // const t = new TextureLoader().load( 'equirectangular.png' );
-    // t.mapping = EquirectangularReflectionMapping;
-    // this.__scene.background = t;
-    // this.__scene.environment = t;
-    const geometry = new SphereGeometry(800, 500, 500);
-    const texture = new TextureLoader().load( 'equirectangular.png' );
-    texture.mapping = EquirectangularReflectionMapping;
-    this.__scene.environment = texture;
-    const meterial = new MeshPhongMaterial({ color: 0xffffff, map:texture, side: BackSide});
-    const mesh = new Mesh(geometry, meterial);
-    return mesh;
-  }
   getLights() {
     const group = new Group();
     const directionalLight1 = new DirectionalLight(0xffffff, 1);
-    directionalLight1.position.set(500, 500, 0);
+    directionalLight1.position.set(5, 5, 0);
     const directionalLight2 = new DirectionalLight(0xffffff, 1);
-    directionalLight2.position.set(0, 500, 500);
+    directionalLight2.position.set(0, 5, 5);
     const directionalLight3 = new DirectionalLight(0xffffff, 1);
-    directionalLight3.position.set(0, 500, -500);
+    directionalLight3.position.set(0, 5, -5);
     const directionalLight4 = new DirectionalLight(0xffffff, 1);
-    directionalLight4.position.set(-500, 500, 0);
+    directionalLight4.position.set(-5, 5, 0);
     group.add(
       new AmbientLight(0xffffff, 0.4),
       directionalLight1,
@@ -109,7 +98,12 @@ export class Exhibition extends EventDispatcher {
    */
   changeModel(url:string) {
     this.__obj.clear()
-    this.gltf(url);
+    this._loader.load(url, (gltf:any) => {
+      gltf.scene.name = '3dmodel';
+      this.__obj.add(gltf.scene);
+      const event = { type: EVENT.LOADED, data: gltf };
+      this.dispatchEvent(event);  
+    }, this.onLoading, this.onLoadErrer);
   }
   /**
    * 改变背景
@@ -132,19 +126,13 @@ export class Exhibition extends EventDispatcher {
       this.envToModel(texture, obj.children[0]);
     }
   }
-  gltf(url:string) {
-    const loader = new GLTFLoader();
-    loader.load(url, (gltf) => {
-      gltf.scene.name = '3dmodel';
-      this.__obj.add(gltf.scene);
-    }, this.onLoading, this.onLoadErrer);
-  }
-  fbx(url:string) {
-    const loader = new FBXLoader();
-    loader.load(url, (obj) => {
-      this.__obj.add(obj);
-      console.log(obj);
-    }, this.onLoading, this.onLoadErrer);
+  loaderInit() {
+    const dracoLoader =new DRACOLoader();
+    this._loader = new GLTFLoader();
+    dracoLoader.setDecoderPath('./gltfdraco/');
+    dracoLoader.setDecoderConfig({ type:'js'});
+    dracoLoader.preload();
+    this._loader.setDRACOLoader(dracoLoader);
   }
   /**
    * 停止拖动
@@ -199,7 +187,6 @@ export class Exhibition extends EventDispatcher {
    * @param e 事件
    */
   onLoading = (e:Event) => {
-    console.log(e);
     const event = { type: EVENT.LOADING, data: e };
     this.dispatchEvent(event);
   }
@@ -208,7 +195,8 @@ export class Exhibition extends EventDispatcher {
    * @param e 事件
    */
   onLoadErrer = (e:Event) => {
-    console.error(e);
+    const event = { type: EVENT.LOAD_FAIL, data: e };
+    this.dispatchEvent(event);
   }
   animate = (time:number)=> {
     requestAnimationFrame(this.animate);

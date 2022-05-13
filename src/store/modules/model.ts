@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import previewN1 from '@/assets/images/n1.png';
+import previewN2 from '@/assets/images/n2.png';
+import previewN3 from '@/assets/images/n3.png';
 import previewN5 from '@/assets/images/n5.png';
 
 
@@ -11,7 +13,15 @@ const models:any = [
   {
     preview: previewN5,
     url: 'models/n5.glb'
-  }
+  },
+  {
+    preview: previewN2,
+    url: 'models/S1.glb'
+  },
+  {
+    preview: previewN3,
+    url: 'models/S2.glb'
+  },
 ];
 
 /**
@@ -31,8 +41,8 @@ const useModel = defineStore({
       return this.backgrounds[this.backgroundsKey].url;
     },
     backgrounds():any {
-      const arr = new Array(7);
-      for(let n = 0; n < 7; n++) {
+      const arr = new Array(8);
+      for(let n = 0; n < 8; n++) {
         const url = `backgrounds/${n}.jpg`;
         arr[n] = {url};
       }
