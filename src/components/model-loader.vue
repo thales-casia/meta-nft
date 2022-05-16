@@ -19,7 +19,6 @@ const canvas = ref<HTMLCanvasElement>();
 const msg = ref('');
 const isLoading = ref(false);
 function onLoading (e:any) {
-  console.log(e);
   isLoading.value = true;
   const { data } = e;
   const per = data.loaded / data.total;

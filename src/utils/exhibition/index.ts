@@ -1,5 +1,6 @@
 import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, MathUtils, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { DeviceOrientationControls } from '@/utils/device-orientation-controls';
@@ -26,7 +27,7 @@ const Static = {
   Y: 0,
   WIDTH: 0,
   HEIGHT: 0,
-  DURATION: 800,
+  DURATION: 1600,
   CAMERA_FAR: 9
 };
 
@@ -87,9 +88,13 @@ export class Exhibition extends EventDispatcher {
    */
   start() {
     this.onResize(); // 必须重新定位，否则高度不正确
-    this._controls = new OrbitControls(this.__camera, this.__renderer.domElement); // 拖动摄像机
-    this._controls.enablePan = false;
-    this._controls.addEventListener('end', this.onControlEnd); // 拖动摄像机之后还原
+    // this._controls = new OrbitControls(this.__camera, this.__renderer.domElement); // 拖动摄像机
+    this._controls = new TrackballControls(this.__camera, this.__renderer.domElement); // 拖动摄像机
+    this._controls.rotateSpeed = 1.0;
+    this._controls.zoomSpeed = 1.2;
+    this._controls.panSpeed = 0.8;
+    // this._controls.enablePan = false;
+    // this._controls.addEventListener('end', this.onControlEnd); // 拖动摄像机之后还原
     this._gyro = new DeviceOrientationControls(this.__obj); // 陀螺仪控制物体
   };
   /**
@@ -114,7 +119,7 @@ export class Exhibition extends EventDispatcher {
       texture.mapping = EquirectangularReflectionMapping;
       this.__scene.background = texture;
       this.__scene.environment = texture;
-      this.envToModel(texture, this.__obj);
+      // this.envToModel(texture, this.__obj);
     });
   }
   envToModel(texture:any, obj:any) {
@@ -143,13 +148,11 @@ export class Exhibition extends EventDispatcher {
       x: this._controls.object.position.x,
       y: this._controls.object.position.y,
       z: this._controls.object.position.z,
-      length: this._controls.object.position.length()
     };
     let aim = { // 目标位置
       x: this._controls.position0.x,
       y: this._controls.position0.y,
       z: this._controls.position0.z,
-      length: Static.CAMERA_FAR
     };
     /*
     const a = Math.round(MathUtils.radToDeg(Math.atan2(position.x, position.z)) / 90);
@@ -176,7 +179,7 @@ export class Exhibition extends EventDispatcher {
     const t = new Tween(position).to(aim, Static.DURATION).easing(Easing.Quadratic.In);
     t.onUpdate((e) => {
       const v = new Vector3(e.x, e.y, e.z);
-      v.setLength(e.length)
+      v.setLength(this._controls.object.position.length());
       this._controls.object.position.set(v.x, v.y, v.z);
       this._controls.object.lookAt(this._controls.target);
     });
@@ -200,6 +203,7 @@ export class Exhibition extends EventDispatcher {
   }
   animate = (time:number)=> {
     requestAnimationFrame(this.animate);
+    if(this._controls) this._controls.update();
     TWEEN.update(time);
     this.__renderer.render(this.__scene, this.__camera);
   }
