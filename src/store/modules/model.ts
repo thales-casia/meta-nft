@@ -1,18 +1,6 @@
+import { models } from '@/utils';
 import { defineStore } from 'pinia';
-import previewS1 from '@/assets/images/s1.png';
-import previewS2 from '@/assets/images/s2.png';
-import bg from '@/assets/images/universe.jpg';
 
-const models:any = [
-  {
-    preview: previewS1,
-    url: 'models/S1.glb'
-  },
-  {
-    preview: previewS2,
-    url: 'models/S2.glb'
-  },
-];
 
 /**
  * 模型加载页面
@@ -20,6 +8,7 @@ const models:any = [
 const useModel = defineStore({
   id: 'modelShow',
   state: () => ({
+    modelUrl: models[0].url,
     modelsKey: 0,
     backgroundsKey: 0
   }),
@@ -29,8 +18,7 @@ const useModel = defineStore({
     },
     backgroundUrl():string {
       // return this.backgrounds[this.backgroundsKey].url;
-      // return 'backgrounds/universe.jpg';
-      return bg;
+      return 'backgrounds/universe.jpg';
     },
     backgrounds():any {
       const arr = new Array(8);
@@ -45,6 +33,9 @@ const useModel = defineStore({
     }
   },
   actions: {
+    setModelUrl(id:any):void {
+      this.modelUrl = `models/${id}.glb`;
+    },
     changeModel(key:any):void {
       this.modelsKey = key;
     },

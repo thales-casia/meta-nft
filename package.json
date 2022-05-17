@@ -13,7 +13,8 @@
     "pinia": "^2.0.13",
     "three": "^0.139.2",
     "vant": "^3.4.8",
-    "vue": "^3.2.33"
+    "vue": "^3.2.33",
+    "vue-router": "^4.0.15"
   },
   "devDependencies": {
     "@types/three": "^0.139.0",
