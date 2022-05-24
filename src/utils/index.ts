@@ -4,13 +4,13 @@ import previewS2 from '@/assets/images/s2.png';
 
 export const models:any = [
   {
-    id: 'b1',
+    id: 'a1',
     preview: previewS1,
-    url: 'models/b1.glb'
+    url: 'models/a1.glb'
   },
   {
-    id: 'a2',
+    id: 'b1',
     preview: previewS2,
-    url: 'models/a2.glb'
+    url: 'models/b1.glb'
   },
 ];

@@ -145,7 +145,7 @@ class DeviceOrientationControls extends EventDispatcher {
 				// if(Math.abs(quaternion.angleTo(_q0)) < 0.5) {
 				// 	quaternion.set(_q0.x, _q0.y, _q0.z, _q0.w);
 				// }
-				scope.object.quaternion.rotateTowards(quaternion, 0.03);
+				scope.object.quaternion.rotateTowards(quaternion, 0.02);
 				// console.log(scope.object.quaternion, scope.object.rotation);
 				// setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
 				// console.log(lastQuaternion, scope.object.quaternion);

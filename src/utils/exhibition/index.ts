@@ -1,4 +1,4 @@
-import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, MathUtils, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping, Vector3 } from 'three';
+import { WebGLRenderer, EventDispatcher, PerspectiveCamera,TextureLoader, Scene, MathUtils, DirectionalLight, AmbientLight, Event, Object3D, MeshPhongMaterial, BackSide, Mesh, CylinderGeometry, Group, SphereGeometry, Material, sRGBEncoding, MeshStandardMaterial, ACESFilmicToneMapping, EquirectangularReflectionMapping, Vector3, PointLight, MeshBasicMaterial, RepeatWrapping, MirroredRepeatWrapping } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -35,6 +35,7 @@ export class Exhibition extends EventDispatcher {
   _canvas;
   __camera; // 摄像头
   __scene; // 场景
+  __background; // 背景
   __obj; //
   // __bg;//
   __renderer; // 渲染器
@@ -49,28 +50,46 @@ export class Exhibition extends EventDispatcher {
     this.__camera = new PerspectiveCamera(75, Static.WIDTH / Static.HEIGHT, 0.01, 10000);
     this.__camera.position.set(0, 0, Static.CAMERA_FAR);
     this.__renderer = new WebGLRenderer({ canvas, antialias: true });
+    this.__background = new Mesh(new SphereGeometry(100,100,100), new MeshBasicMaterial({side:BackSide}));
     this.__obj = new Object3D();
     this.loaderInit();
-    this.__scene.add( this.getLights(), this.__obj);
+    this.__scene.add(
+      this.getLights(),
+      // this.__background,
+      this.__obj);
     window.addEventListener('resize', this.onResize);
     this.animate(0);
   }
   getLights() {
     const group = new Group();
-    const directionalLight1 = new DirectionalLight(0xffffff, 1);
-    directionalLight1.position.set(5, 5, 0);
-    const directionalLight2 = new DirectionalLight(0xffffff, 1);
-    directionalLight2.position.set(0, 5, 5);
-    const directionalLight3 = new DirectionalLight(0xffffff, 1);
-    directionalLight3.position.set(0, 5, -5);
-    const directionalLight4 = new DirectionalLight(0xffffff, 1);
-    directionalLight4.position.set(-5, 5, 0);
+    // const directionalLight1 = new DirectionalLight(0xffffff, 1);
+    // directionalLight1.position.set(5, 5, 0);
+    // const directionalLight2 = new DirectionalLight(0xffffff, 1);
+    // directionalLight2.position.set(0, 5, 5);
+    // const directionalLight3 = new DirectionalLight(0xffffff, 1);
+    // directionalLight3.position.set(0, 5, -5);
+    // const directionalLight4 = new DirectionalLight(0xffffff, 1);
+    // directionalLight4.position.set(-5, 5, 0);
+    const light0 = new PointLight(0xffffff, 0.8);
+    light0.position.set(0, 5, 0);
+    const light1 = new PointLight(0xffffff, 0.8);
+    light1.position.set(0, -5, 0);
+    const light2 = new PointLight(0xffffff, 0.8);
+    light2.position.set(10, 0, 0);
+    const light3 = new PointLight(0xffffff, 0.8);
+    light3.position.set(-10, 0, 0);
+    const light4 = new PointLight(0xffffff, 0.8);
+    light4.position.set(0, 0, 5);
+    const light5 = new PointLight(0xffffff, 0.8);
+    light5.position.set(0, 0, -5);
     group.add(
-      new AmbientLight(0xffffff, 0.4),
-      directionalLight1,
-      directionalLight2,
-      directionalLight3,
-      directionalLight4
+      new AmbientLight(0xffffff, 3),
+      light0,
+      light1,
+      light2,
+      light3,
+      light4,
+      light5,
     );
     return group;
   }
@@ -92,7 +111,9 @@ export class Exhibition extends EventDispatcher {
     this._controls = new TrackballControls(this.__camera, this.__renderer.domElement); // 拖动摄像机
     this._controls.rotateSpeed = 1.0;
     this._controls.zoomSpeed = 1.2;
-    this._controls.panSpeed = 0.8;
+    this._controls.noPan = true;
+    this._controls.maxDistance = 90;
+    // this._controls.panSpeed = 0.8;
     // this._controls.enablePan = false;
     // this._controls.addEventListener('end', this.onControlEnd); // 拖动摄像机之后还原
     this._gyro = new DeviceOrientationControls(this.__obj); // 陀螺仪控制物体
@@ -115,13 +136,18 @@ export class Exhibition extends EventDispatcher {
    * @param url 背景地址
    */
   changeBackground(url:string) {
-    new TextureLoader().load( url, texture => {
-      texture.mapping = EquirectangularReflectionMapping;
-      this.__scene.background = texture;
-      this.__scene.environment = texture;
-      // this.envToModel(texture, this.__obj);
-    });
-  }
+    // const texture = new TextureLoader().load( url);
+    // texture.wrapS = MirroredRepeatWrapping;
+    // texture.wrapT = MirroredRepeatWrapping;
+    
+    // texture.repeat.set( 2, 2 );
+    // this.__background.material.map = texture;
+    // this.__background.material.needsUpdate = true;
+
+    const texture = new TextureLoader().load( url);
+    texture.mapping = EquirectangularReflectionMapping;
+    this.__scene.background = texture;
+}
   envToModel(texture:any, obj:any) {
     if(obj.meterial) {
       obj.meterial.envMap = texture;
