@@ -18,7 +18,7 @@ const useModel = defineStore({
     },
     backgroundUrl():string {
       // return this.backgrounds[this.backgroundsKey].url;
-      return 'backgrounds/universe.jpg';
+      return 'backgrounds/star.jpg';
     },
     backgrounds():any {
       const arr = new Array(8);

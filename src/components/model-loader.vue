@@ -11,8 +11,7 @@ import { onMounted, ref, watch } from 'vue';
 import { Dialog } from 'vant';
 
 const props = defineProps({
-  modelUrl:String,
-  bgUrl:String
+  modelUrl:String
 });
 const canvas = ref<HTMLCanvasElement>();
 
@@ -31,9 +30,6 @@ let exhibition:any;
 watch(() => props.modelUrl, (val) => {
   exhibition.changeModel(val);
 });
-watch(() => props.bgUrl, (val) => {
-  exhibition.changeBackground(val);
-});
 onMounted(() => {
   if(canvas.value && props.modelUrl) {
     canvas.value.width = window.innerWidth;
@@ -50,13 +46,11 @@ onMounted(() => {
           if(res == 'granted') {
             exhibition.start();
             exhibition.changeModel(props.modelUrl);
-            exhibition.changeBackground(props.bgUrl);
           }
         });
       } else {
         exhibition.start();
         exhibition.changeModel(props.modelUrl);
-        exhibition.changeBackground(props.bgUrl);
       }
     }).catch(() => {
       msg.value = '未授权陀螺仪，请关闭App重新授权';

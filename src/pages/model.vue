@@ -1,6 +1,6 @@
 <template>
   <div>
-    <model-loader :model-url="modelUrl" :bg-url="bgUrl" />
+    <model-loader :model-url="modelUrl" />
   </div>
 </template>
 <script setup lang="ts">
@@ -13,7 +13,7 @@ const props = defineProps({
 const store = useModel();
 
 const modelUrl = computed(() => store.modelUrl);
-const bgUrl = computed(() => store.backgroundUrl);
+// const bgUrl = computed(() => store.backgroundUrl);
 // const models = computed(() => store.models);
 watch(() => props.id, (val, old) => {
   console.log(val, old);
