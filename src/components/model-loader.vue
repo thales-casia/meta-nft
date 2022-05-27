@@ -21,7 +21,7 @@ function onLoading (e:any) {
   isLoading.value = true;
   const { data } = e;
   const per = data.loaded / data.total;
-  msg.value = `加载进度:${Math.floor(per * 1000) / 10}%`;
+  msg.value = `loading:${Math.floor(per * 1000) / 10}%`;
 }
 function onLoaded(e:any) {
   isLoading.value = false;
@@ -38,8 +38,10 @@ onMounted(() => {
     exhibition.addEventListener(EVENT.LOADING, onLoading);
     exhibition.addEventListener(EVENT.LOADED, onLoaded);
     Dialog.confirm({
-      title: '授权',
-      message: '请授权陀螺仪'
+      title: 'Authorization',
+      message: 'Please authorize the gyroscope',
+      confirmButtonText: 'confirm',
+      cancelButtonText: 'cancel'
     }).then(() => {
       if ( window.DeviceOrientationEvent !== undefined && typeof window.DeviceOrientationEvent.requestPermission === 'function' ) {
         window.DeviceOrientationEvent.requestPermission().then( (res:any) => {
@@ -53,7 +55,7 @@ onMounted(() => {
         exhibition.changeModel(props.modelUrl);
       }
     }).catch(() => {
-      msg.value = '未授权陀螺仪，请关闭App重新授权';
+      msg.value = 'Gyroscope need authorized, please re-authorize while reopen page.';
     });
   }
 });

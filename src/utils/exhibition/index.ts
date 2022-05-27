@@ -41,6 +41,11 @@ export class Exhibition extends EventDispatcher {
   _loader:any = null; // 加载器
   _controls:any = null; // 控制器
   _gyro:any = null; // 陀螺仪
+  ORIGINS = [
+    new Vector3(0, 0, 9),
+    new Vector3(0, 0, -9)
+  ];
+
   constructor(canvas:HTMLCanvasElement) {
     super();
     this._canvas = canvas;
@@ -193,33 +198,21 @@ export class Exhibition extends EventDispatcher {
       y: this._controls.object.position.y,
       z: this._controls.object.position.z,
     };
-    let aim = { // 目标位置
-      x: this._controls.position0.x,
-      y: this._controls.position0.y,
-      z: this._controls.position0.z,
-    };
-    /*
-    const a = Math.round(MathUtils.radToDeg(Math.atan2(position.x, position.z)) / 90);
-    switch(a) {
-      case -1:
-        aim.x = Static.CAMERA_FAR;
-        aim.z = 0;
-        break;
-      case 1:
-        aim.x = -Static.CAMERA_FAR;
-        aim.z = 0;
-        break;
-      case 2:
-        aim.x = 0
-        aim.z = -Static.CAMERA_FAR;
-        break;
-      case 0:
-      default:
-        aim.x = 0
-        aim.z = Static.CAMERA_FAR;
-        break;
+    // let aim = { // 目标位置
+    //   x: this._controls.position0.x,
+    //   y: this._controls.position0.y,
+    //   z: this._controls.position0.z,
+    // };
+    let originIndex = 0;
+    let minDistance = Infinity;
+    for(const k in this.ORIGINS) {
+      const distance = this.ORIGINS[k].distanceTo(this._controls.object.position);
+      if(distance < minDistance) {
+        minDistance = distance;
+        originIndex = parseInt(k);
+      }
     }
-    */
+    let aim = this.ORIGINS[originIndex];
     const t = new Tween(position).to(aim, Static.DURATION).easing(Easing.Quadratic.In);
     t.onUpdate((e) => {
       const v = new Vector3(e.x, e.y, e.z);
