@@ -199,21 +199,21 @@ export class Exhibition extends EventDispatcher {
       y: this._controls.object.position.y,
       z: this._controls.object.position.z,
     };
-    // let aim = { // 目标位置
-    //   x: this._controls.position0.x,
-    //   y: this._controls.position0.y,
-    //   z: this._controls.position0.z,
-    // };
-    let originIndex = 0;
-    let minDistance = Infinity;
-    for(const k in this.ORIGINS) {
-      const distance = this.ORIGINS[k].distanceTo(this._controls.object.position);
-      if(distance < minDistance) {
-        minDistance = distance;
-        originIndex = parseInt(k);
-      }
-    }
-    let aim = this.ORIGINS[originIndex];
+    let aim = { // 目标位置
+      x: this._controls.position0.x,
+      y: this._controls.position0.y,
+      z: this._controls.position0.z,
+    };
+    // let originIndex = 0;
+    // let minDistance = Infinity;
+    // for(const k in this.ORIGINS) {
+    //   const distance = this.ORIGINS[k].distanceTo(this._controls.object.position);
+    //   if(distance < minDistance) {
+    //     minDistance = distance;
+    //     originIndex = parseInt(k);
+    //   }
+    // }
+    // let aim = this.ORIGINS[originIndex];
     const t = new Tween(position).to(aim, Static.DURATION).easing(Easing.Quadratic.In);
     t.onUpdate((e) => {
       const v = new Vector3(e.x, e.y, e.z);
