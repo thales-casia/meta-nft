@@ -57,7 +57,7 @@ export class Exhibition extends EventDispatcher {
     this.__obj = new Object3D();
     this.loaderInit();
     this.__scene.add(
-      this.getLights(),
+      // this.getLights(),
       this.getBackground(),
       this.__obj);
     window.addEventListener('resize', this.onResize);
@@ -87,11 +87,11 @@ export class Exhibition extends EventDispatcher {
     light5.position.set(0, 0, -9);
     group.add(
       // new AmbientLight(0xffffff, 1),
-      light0,
-      light1,
-      light2,
-      light3,
-      light4,
+      // light0,
+      // light1,
+      // light2,
+      // light3,
+      // light4,
       light5,
     );
     return group;
@@ -116,6 +116,7 @@ export class Exhibition extends EventDispatcher {
     // this._controls.zoomSpeed = 1.2;
     // this._controls.noPan = true;
     this._controls.maxDistance = 60;
+    this._controls.zoomSpeed = 0.3;
     // this._controls.panSpeed = 0.8;
     this._controls.enablePan = false;
     this._controls.addEventListener('end', this.onControlEnd); // 拖动摄像机之后还原
