@@ -92,7 +92,7 @@ export class Exhibition extends EventDispatcher {
       // light2,
       // light3,
       // light4,
-      light5,
+      // light5,
     );
     return group;
   }
