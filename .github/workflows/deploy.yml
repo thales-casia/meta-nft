@@ -23,7 +23,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.META_NFT_SERVER }}
           ARGS: "-rltgoDzvO --delete"
           SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.server.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.server.REMOTE_USER }}
-          TARGET: ${{ secrets.server.REMOTE_TARGET }}
-          EXCLUDE: "/dist/, /node_modules/"
+          REMOTE_HOST: "119.8.54.91"
+          REMOTE_USER: "deploy"
+          TARGET: "/data/web/meta-nft"
+          EXCLUDE: "/docs/, /node_modules/"
