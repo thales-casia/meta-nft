@@ -34,6 +34,7 @@ const Static = {
 export class Exhibition extends EventDispatcher {
   _canvas;
   __camera; // 摄像头
+  __cameraContainer; // 摄像头载体
   __scene; // 场景
   __obj; //
   // __bg;//
@@ -55,9 +56,14 @@ export class Exhibition extends EventDispatcher {
     this.__camera.position.set(0, 0, Static.CAMERA_FAR);
     this.__renderer = new WebGLRenderer({ canvas, antialias: true });
     this.__obj = new Object3D();
+    this.__cameraContainer = new Object3D();
+    // this.__cameraContainer.scale.x = -1;
+    // this.__cameraContainer.scale.y = -1;
+    // this.__cameraContainer.scale.z = -1;
+    this.__cameraContainer.add(this.__camera);
     this.loaderInit();
     this.__scene.add(
-      // this.getLights(),
+      this.__cameraContainer,
       this.getBackground(),
       this.__obj);
     window.addEventListener('resize', this.onResize);
@@ -120,7 +126,7 @@ export class Exhibition extends EventDispatcher {
     // this._controls.panSpeed = 0.8;
     this._controls.enablePan = false;
     this._controls.addEventListener('end', this.onControlEnd); // 拖动摄像机之后还原
-    this._gyro = new DeviceOrientationControls(this.__obj); // 陀螺仪控制物体
+    this._gyro = new DeviceOrientationControls(this.__cameraContainer); // 陀螺仪控制物体
   };
   /**
    * 改变模型
