@@ -2,9 +2,6 @@
   <div class="model-loader">
     <div v-if="isLoading" class="msg">{{msg}}</div>
     <canvas ref="canvas" width="500" height="500" style="width:100%"></canvas>
-    <div class="vibrate">
-      <button @click="onClick">测试震动{{result}}</button>
-    </div>
   </div>
 </template>
 
@@ -62,18 +59,6 @@ onMounted(() => {
     });
   }
 });
-const result = ref('准备');
-function onClick() {
-  try {
-    navigator.vibrate(100);
-    result.value = '成功'
-  } catch (error:any) {
-    result.value = error.message
-  }
-  setTimeout(() => {
-    navigator.vibrate(1000);
-  }, 5000);
-}
 </script>
 
 <style scoped lang="scss">
