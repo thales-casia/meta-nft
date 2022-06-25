@@ -64,8 +64,12 @@ onMounted(() => {
 });
 const result = ref('准备');
 function onClick() {
-  navigator.vibrate(100);
-  result.value = '成功'
+  try {
+    navigator.vibrate(100);
+    result.value = '成功'
+  } catch (error:any) {
+    result.value = error.message
+  }
   setTimeout(() => {
     navigator.vibrate(1000);
   }, 5000);
