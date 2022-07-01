@@ -37,7 +37,7 @@ export class Exhibition extends EventDispatcher {
   __cameraContainer; // 摄像头载体
   __scene; // 场景
   __obj; //
-  // __bg;//
+  __bg;//
   __renderer; // 渲染器
   _loader:any = null; // 加载器
   _controls:any = null; // 控制器
@@ -56,6 +56,7 @@ export class Exhibition extends EventDispatcher {
     this.__camera.position.set(0, 0, Static.CAMERA_FAR);
     this.__renderer = new WebGLRenderer({ canvas, antialias: true });
     this.__obj = new Object3D();
+    this.__bg = this.getBackground();
     this.__cameraContainer = new Object3D();
     // this.__cameraContainer.scale.x = -1;
     // this.__cameraContainer.scale.y = -1;
@@ -64,7 +65,7 @@ export class Exhibition extends EventDispatcher {
     this.loaderInit();
     this.__scene.add(
       this.__cameraContainer,
-      this.getBackground(),
+      this.__bg,
       this.__obj);
     window.addEventListener('resize', this.onResize);
     this.animate(0);
@@ -142,7 +143,7 @@ export class Exhibition extends EventDispatcher {
     }, this.onLoading, this.onLoadErrer);
   }
   getBackground() {
-    const group = new Group();
+    const group:any = new Group();
     const background = new Mesh(
       new SphereGeometry(100,100,100),
       new MeshBasicMaterial({
@@ -176,7 +177,17 @@ export class Exhibition extends EventDispatcher {
       star,
       nebula
     );
+    group.star = star;
+    group.nebula = nebula;
     return group;
+  }
+  bgSpin() {
+    if(this.__bg) {
+      const star = this.__bg.children[1];
+      const nebula = this.__bg.children[2];
+      star.rotation.y -= 0.001;
+      nebula.rotation.y -= 0.0002;
+    }
   }
   envToModel(texture:any, obj:any) {
     if(obj.meterial) {
@@ -249,6 +260,7 @@ export class Exhibition extends EventDispatcher {
     requestAnimationFrame(this.animate);
     // if(this._controls) this._controls.update();
     TWEEN.update(time);
+    this.bgSpin();
     this.__renderer.render(this.__scene, this.__camera);
   }
 }
