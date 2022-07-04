@@ -172,6 +172,8 @@ export class Exhibition extends EventDispatcher {
         map:new TextureLoader().load( './backgrounds/nebula.png')
       })
     );
+    // nebula.rotateZ(MathUtils.degToRad(90));
+    // star.rotateZ(MathUtils.degToRad(90));
     group.add(
       background,
       star,
@@ -185,8 +187,8 @@ export class Exhibition extends EventDispatcher {
     if(this.__bg) {
       const star = this.__bg.children[1];
       const nebula = this.__bg.children[2];
-      star.rotation.y -= 0.001; // 星星顺时针转动速度
-      nebula.rotation.y -= 0.0009; // 星云顺时针转动速度
+      star.rotation.x -= 0.0014; // 星星顺时针转动速度
+      nebula.rotation.x -= 0.0012; // 星云顺时针转动速度
     }
   }
   envToModel(texture:any, obj:any) {
