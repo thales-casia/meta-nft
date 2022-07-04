@@ -185,8 +185,8 @@ export class Exhibition extends EventDispatcher {
     if(this.__bg) {
       const star = this.__bg.children[1];
       const nebula = this.__bg.children[2];
-      star.rotation.y -= 0.0008;
-      nebula.rotation.y -= 0.0005;
+      star.rotation.y -= 0.001; // 星星顺时针转动速度
+      nebula.rotation.y -= 0.0009; // 星云顺时针转动速度
     }
   }
   envToModel(texture:any, obj:any) {
